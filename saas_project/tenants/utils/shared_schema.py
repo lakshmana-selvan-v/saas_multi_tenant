@@ -1,0 +1,1 @@
+BASIC_SHARED_SCHEMA = "shared"
