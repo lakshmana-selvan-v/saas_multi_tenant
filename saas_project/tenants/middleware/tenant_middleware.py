@@ -1,6 +1,7 @@
 from django.db import connection
 from django.http import JsonResponse
 from ..model.tenants import Tenant
+from django.conf import settings
 
 class TenantSchemaMiddleware:
     
@@ -9,6 +10,12 @@ class TenantSchemaMiddleware:
         
         
     def __call__(self, request):
+        
+        path = request.path
+
+        if any(path.startswith(prefix) for prefix in settings.PUBLIC_URL_PREFIXES):
+            return self.get_response(request)
+        
         tenant_id = request.headers.get("X-Tenant-ID")
         
         if not tenant_id:
@@ -34,12 +41,19 @@ class TenantSchemaMiddleware:
                 },
                 status=403
             )
-        with connection.cursor() as cursor:
-            cursor.execute(f'SET search_path TO "{tenant.schema_name}"')
             
-        response = self.get_response(request)
-        
+        schema_name = (
+            tenant.schema_name
+            if tenant.plan == "gold"
+            else settings.BASIC_SHARED_SCHEMA
+        )
         with connection.cursor() as cursor:
-            cursor.execute('SET search_path TO "public"')
+            cursor.execute(f'SET search_path TO "{schema_name}"')
+        
+        try:
+            response = self.get_response(request)
+        finally:        
+            with connection.cursor() as cursor:
+                cursor.execute('SET search_path TO "public"')
             
         return response

@@ -10,6 +10,7 @@ class Tenant(models.Model):
     plan = models.CharField(max_length=10, choices=PLAN_ENUM)
     schema_name = models.CharField(max_length=100, unique=True)
     is_active = models.BooleanField(default=True)
+    is_migrating = models.BooleanField(default=False)
     
     class Meta:
         db_table = "tenants"
