@@ -10,3 +10,8 @@ class UserRepository:
             role =data['role']
         )
         return user
+    
+    @staticmethod
+    def list_users():
+        users = User.objects.all()
+        return users

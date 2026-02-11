@@ -87,6 +87,8 @@ DATABASES = {
     }
 }
 
+DATABASE_ROUTERS = ["tenants.core.db_router.TenantDatabaseRouter"]
+
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -135,3 +137,10 @@ PUBLIC_URL_PREFIXES = [
 ]
 
 BASIC_SHARED_SCHEMA="public"
+GOLD_SEPARATE_SCHEMA="gold"
+ENTERPRISE_DATABASE_SCHEMA="enterprise"
+
+DB_USERNAME = "postgres"
+DB_PASSWORD = "admin"
+DB_HOST = "localhost"
+DB_PORT = "5432"
