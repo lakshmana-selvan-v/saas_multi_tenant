@@ -10,7 +10,7 @@ _current_db_alias: ContextVar = ContextVar("current_db_alias", default="default"
 def set_current_tenant(tenant):
     _current_tenant.set(tenant)
     _current_tenant_id.set(str(tenant.id))
-    
+
 def set_current_db_alias(alias: str):
     _current_db_alias.set(alias)
     

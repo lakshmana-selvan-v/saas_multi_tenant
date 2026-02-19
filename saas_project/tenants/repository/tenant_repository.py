@@ -10,20 +10,21 @@ class TenantRepository:
     def create_tenant(data):
         schema_name = None
         database_name = None
-        
-        if data['plan'] == settings.ENTERPRISE_DATABASE_SCHEMA:
-            database_name = create_enterprise_database(data['name'])
-        if data['plan'] == settings.GOLD_SEPARATE_SCHEMA:
-            schema_name = data['name'].lower().replace(" ", "_")
-            create_schema_and_migrate(schema_name)     
+        if data["plan"] == settings.ENTERPRISE_DATABASE_SCHEMA:
+            database_name = create_enterprise_database(data["name"])
+            schema_name = settings.BASIC_SHARED_SCHEMA
+        elif data["plan"] == settings.GOLD_SEPARATE_SCHEMA:
+            database_name = settings.DEFAULT_DB_NAME
+            schema_name = data["name"].lower().replace(" ", "_")
+            create_schema_and_migrate(schema_name)
         else:
-            schema_name = BASIC_SHARED_SCHEMA
-        
+            database_name = settings.DEFAULT_DB_NAME
+            schema_name = settings.BASIC_SHARED_SCHEMA
         tenant = Tenant.objects.create(
-            name =data['name'],
-            plan =data['plan'],
-            schema_name =schema_name,
-            database_name =database_name,
-            is_active =True
+            name=data["name"],
+            plan=data["plan"],
+            schema_name=schema_name,
+            database_name=database_name,
+            is_active=True,
         )
         return tenant

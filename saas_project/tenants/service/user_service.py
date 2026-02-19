@@ -10,6 +10,22 @@ class UserService:
     
     @staticmethod
     def list_users():
-        # This will automatically query the correct schema based on the tenant context
         users = UserRepository.list_users()
+        return users
+    
+    @staticmethod
+    def delete_user(user_id):
+        user = UserRepository.delete_user(user_id)
+        return user
+    
+    @staticmethod
+    def update_user(user_id, data):
+        user = UserRepository.update_particular_user(user_id, data)
+        if not user:
+            raise Exception("User not found")
+        return user
+
+    @staticmethod
+    def delete_all_users(tenant_id):
+        users = UserRepository.delete_all_users(tenant_id)
         return users

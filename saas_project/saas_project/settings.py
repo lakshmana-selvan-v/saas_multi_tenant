@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "tenants",
+    "tenants.apps.TenantsConfig",
     "rest_framework",
 ]
 
@@ -80,8 +80,8 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "saas_db",
-        "USER": "postgres",
-        "PASSWORD": "admin",
+        "USER": "app_user",
+        "PASSWORD": "admin@123!",
         "HOST": "localhost",
         "PORT": "5432",
     }
@@ -144,3 +144,10 @@ DB_USERNAME = "postgres"
 DB_PASSWORD = "admin"
 DB_HOST = "localhost"
 DB_PORT = "5432"
+
+
+DB_SUPER_USERNAME = "postgres"
+DB_SUPER_PASSWORD = "admin"
+DB_SUPER_HOST = "localhost"
+DB_SUPER_PORT = "5432"
+DEFAULT_DB_NAME = "saas_db"

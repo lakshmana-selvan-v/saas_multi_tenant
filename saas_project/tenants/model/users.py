@@ -1,10 +1,12 @@
 from django.db import models
-import uuid
+from .base import TenantAwareModel
 
 
-class User(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant_id = models.UUIDField(db_index=True)
+class User(TenantAwareModel):
+    """
+    User model with tenant isolation.
+    RLS is managed via rls_manager.py (table "users" is in RLS_ENABLED_TABLES)
+    """
     email = models.EmailField(unique=True)
     role = models.CharField(max_length=50)
     
