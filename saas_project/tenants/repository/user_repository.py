@@ -7,7 +7,8 @@ class UserRepository:
         user = User.objects.create(
             tenant_id =tenant_id,
             email =data['email'],
-            role =data['role']
+            name =data['name'],
+            age =data['age']
         )
         return user
     
@@ -16,7 +17,8 @@ class UserRepository:
         try:
             user = User.objects.get(id=user_id)
             user.email = data.get("email", user.email)
-            user.role = data.get("role", user.role)
+            user.name = data.get("name", user.name)
+            user.age = data.get("age", user.age)
             user.save()
             return user
         except User.DoesNotExist:

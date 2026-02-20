@@ -7,6 +7,7 @@ RLS_ENABLED_TABLES = [
     "users",
     "blogs",
     "favorites",
+    "students",
 ]
 
 
@@ -30,6 +31,7 @@ def table_exists(table_name: str, schema_name: str = "public") -> bool:
 def get_enable_rls_sql(table_name: str) -> str:
     return f"""
         ALTER TABLE "{table_name}" ENABLE ROW LEVEL SECURITY;
+        ALTER TABLE "{table_name}" FORCE ROW LEVEL SECURITY;
 
         DROP POLICY IF EXISTS tenant_isolation_policy ON "{table_name}";
 
@@ -48,6 +50,7 @@ def get_disable_rls_sql(table_name: str, schema_name: str = None) -> str:
     qualified_table = f'"{schema_name}"."{table_name}"' if schema_name else f'"{table_name}"'
     return f"""
         ALTER TABLE {qualified_table} DISABLE ROW LEVEL SECURITY;
+        ALTER TABLE {qualified_table} FORCE ROW LEVEL SECURITY;
         DROP POLICY IF EXISTS tenant_isolation_policy ON {qualified_table};
     """
 

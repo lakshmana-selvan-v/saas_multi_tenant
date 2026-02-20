@@ -79,7 +79,7 @@ WSGI_APPLICATION = "saas_project.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "saas_db",
+        "NAME": "saas_test_db",
         "USER": "app_user",
         "PASSWORD": "admin@123!",
         "HOST": "localhost",
@@ -150,4 +150,4 @@ DB_SUPER_USERNAME = "postgres"
 DB_SUPER_PASSWORD = "admin"
 DB_SUPER_HOST = "localhost"
 DB_SUPER_PORT = "5432"
-DEFAULT_DB_NAME = "saas_db"
+DEFAULT_DB_NAME = "saas_test_db"

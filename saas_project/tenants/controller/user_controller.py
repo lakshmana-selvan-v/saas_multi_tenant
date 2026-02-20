@@ -17,7 +17,7 @@ def create_user(request):
 @api_view(["GET"])
 def list_users(request):
     users = UserService.list_users()
-    user_data = [{"id": user.id, "email": user.email, "role": user.role} for user in users]
+    user_data = [{"id": user.id, "email": user.email, "name": user.name, "age": user.age} for user in users]
     return Response(user_data, status=status.HTTP_200_OK)
 
 
