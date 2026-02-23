@@ -3,7 +3,6 @@ from copy import deepcopy
 from django.conf import settings
 from django.db import connections
 import psycopg2
-from .rls_manager import get_disable_rls_sql, RLS_ENABLED_TABLES
 
 
 def create_enterprise_database(tenant_name):
@@ -45,17 +44,4 @@ def create_enterprise_database(tenant_name):
     # Run migrations on the new database
     call_command("migrate", database=db_name, interactive=False, verbosity=0)
     
-    # Disable RLS for all tenant-aware tables (Enterprise uses database isolation)
-    _disable_rls_for_enterprise_db(db_name)
-    
     return db_name
-
-
-def _disable_rls_for_enterprise_db(db_name: str):
-    """
-    Disable RLS on all tenant-aware tables for Enterprise database.
-    Enterprise plan uses database-level isolation, so RLS is not needed.
-    """
-    with connections[db_name].cursor() as cursor:
-        for table_name in RLS_ENABLED_TABLES:
-            cursor.execute(get_disable_rls_sql(table_name))

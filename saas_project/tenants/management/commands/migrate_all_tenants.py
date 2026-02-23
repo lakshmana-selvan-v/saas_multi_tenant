@@ -4,13 +4,17 @@ from django.db import connection
 from django.conf import settings
 from tenants.models import Tenant
 from copy import deepcopy
-from ...utils.rls_manager import disable_rls_for_all_tables
+
 
 class Command(BaseCommand):
     help = "Run migrations for public, gold schemas, and enterprise databases"
 
     def handle(self, *args, **options):
-        self.stdout.write(self.style.SUCCESS("🚀 Migrating Default (Public) DB"))
+
+        # ==========================
+        # PUBLIC MIGRATION
+        # ==========================
+        self.stdout.write(self.style.SUCCESS("🚀 Migrating Public Schema"))
         call_command("migrate", database="default")
 
         tenants = Tenant.objects.using("default").all()
@@ -21,19 +25,23 @@ class Command(BaseCommand):
             # GOLD PLAN (Separate Schema)
             # ==========================
             if tenant.plan == settings.GOLD_SEPARATE_SCHEMA:
+
+                schema_name = tenant.schema_name
+
                 self.stdout.write(
-                    self.style.WARNING(f"🔶 Migrating Gold Schema: {tenant.schema_name}")
+                    self.style.WARNING(f"🔶 Migrating Gold Schema: {schema_name}")
                 )
 
                 with connection.cursor() as cursor:
-                    cursor.execute(
-                        f'SET search_path TO "{tenant.schema_name}", public'
-                    )
+                    # Create schema if not exists
+                    cursor.execute(f'CREATE SCHEMA IF NOT EXISTS "{schema_name}"')
+
+                    # Set schema only for this session
+                    cursor.execute(f'SET search_path TO "{schema_name}"')
 
                 call_command("migrate", database="default")
-                disable_rls_for_all_tables(tenant.schema_name)
-
-                # Reset back to public
+                
+                # Reset search_path safely
                 with connection.cursor() as cursor:
                     cursor.execute("SET search_path TO public")
 
@@ -41,8 +49,8 @@ class Command(BaseCommand):
             # ENTERPRISE PLAN (Separate DB)
             # ==========================
             elif tenant.plan == settings.ENTERPRISE_DATABASE_SCHEMA:
+
                 db_alias = tenant.database_name
-                schema_name = tenant.schema_name
 
                 if db_alias not in settings.DATABASES:
                     settings.DATABASES[db_alias] = deepcopy(
@@ -53,8 +61,6 @@ class Command(BaseCommand):
                 self.stdout.write(
                     self.style.WARNING(f"🔷 Migrating Enterprise DB: {db_alias}")
                 )
-
                 call_command("migrate", database=db_alias)
-                disable_rls_for_all_tables(schema_name)
 
         self.stdout.write(self.style.SUCCESS("✅ All tenant migrations completed"))

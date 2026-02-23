@@ -15,11 +15,17 @@ class TenantSchemaMiddleware:
         path = request.path
         if any(path.startswith(prefix) for prefix in settings.PUBLIC_URL_PREFIXES):
             return self.get_response(request)
-        tenant_id = request.headers.get("X-Tenant-ID")
-        if not tenant_id:
-            return JsonResponse({"error": "X-Tenant-ID header is missing."}, status=400)
+        host = request.get_host().split(":")[0]
+        parts = host.split(".")
+        sub_domain = None
+        if host.endswith("localhost") and len(parts) > 1:
+            sub_domain = parts[0]
+        elif len(parts) > 2:
+            sub_domain = parts[1]
+        if not sub_domain:
+            return JsonResponse({"error": "Invalid sub domain."}, status=400)
         try:
-            tenant = Tenant.objects.using("default").get(id=tenant_id)
+            tenant = Tenant.objects.using("default").get(sub_domain=sub_domain)
         except Tenant.DoesNotExist:
             return JsonResponse({"error": "Invalid Tenant ID."}, status=400)
         if not tenant.is_active:

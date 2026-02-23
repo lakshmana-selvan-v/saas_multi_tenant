@@ -2,7 +2,7 @@ from django.db import connection
 from django.core.management import call_command
 from psycopg2 import sql
 from ..core.create_schema_database import create_schema
-from .rls_manager import disable_rls_for_all_tables
+from .rls_manager import disable_rls_for_schema
 
 
 def create_schema_and_migrate(schema_name: str):
@@ -22,7 +22,7 @@ def create_schema_and_migrate(schema_name: str):
     call_command("migrate", interactive=False, verbosity=0)
     
     # Disable RLS for all tenant-aware tables (Gold plan uses schema isolation)
-    disable_rls_for_all_tables(schema_name)
+    disable_rls_for_schema(schema_name)
     
     with connection.cursor() as cursor:
         cursor.execute('SET search_path TO public')

@@ -1,5 +1,5 @@
 from django.apps import AppConfig
-from .utils.rls_manager import enable_rls_for_all_tables
+from .utils.rls_manager import enable_rls_for_public_schema
 from django.db.models.signals import post_migrate
 
 
@@ -8,4 +8,4 @@ class TenantsConfig(AppConfig):
     name = "tenants"
 
     def ready(self):
-        post_migrate.connect(lambda **kwargs: enable_rls_for_all_tables(), sender=self)
+        post_migrate.connect(lambda **kwargs: enable_rls_for_public_schema(), sender=self)

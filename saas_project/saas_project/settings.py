@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-
+from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,7 +25,11 @@ SECRET_KEY = "django-insecure-p1h%_vn7lt=_oppovhf)$zj^(h2(%f@x+rr!)1bvlhqg#=^w*9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    ".localhost",
+]
 
 
 # Application definition
@@ -39,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "tenants.apps.TenantsConfig",
     "rest_framework",
+    "rest_framework_simplejwt",
 ]
 
 MIDDLEWARE = [
@@ -72,6 +77,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "saas_project.wsgi.application"
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -79,7 +90,7 @@ WSGI_APPLICATION = "saas_project.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "saas_db",
+        "NAME": "saas_product",
         "USER": "app_user",
         "PASSWORD": "admin@123!",
         "HOST": "localhost",
@@ -107,6 +118,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -130,6 +146,8 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Custom user model
+AUTH_USER_MODEL = 'tenants.User'
 
 PUBLIC_URL_PREFIXES = [
     "/tenants/onboard/",
@@ -150,4 +168,4 @@ DB_SUPER_USERNAME = "postgres"
 DB_SUPER_PASSWORD = "admin"
 DB_SUPER_HOST = "localhost"
 DB_SUPER_PORT = "5432"
-DEFAULT_DB_NAME = "saas_db"
+DEFAULT_DB_NAME = "saas_product"
