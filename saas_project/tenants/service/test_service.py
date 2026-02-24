@@ -34,8 +34,8 @@ class TestService:
         return [{"id": id} for id in user_ids]
 
     @staticmethod
-    def scenario_9_get_user_ids():
-        user_ids = TestRepository.scenario_9_get_user_ids()
+    def scenario_8_get_user_ids():
+        user_ids = TestRepository.scenario_8_get_user_ids()
         return [{"id": id} for id in user_ids]
 
     @staticmethod

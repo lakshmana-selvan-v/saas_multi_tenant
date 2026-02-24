@@ -55,7 +55,7 @@ def test_scenario7(request, tenant_id):
 
 @api_view(["GET"])
 def test_scenario8(request):
-    ids = TestService.scenario_9_get_user_ids()
+    ids = TestService.scenario_8_get_user_ids()
     return Response(
         {"message": "Test scenario 8 completed successfully", "ids": ids},
         status=status.HTTP_200_OK,

@@ -34,7 +34,7 @@ class TestRepository:
         return list(user_ids)
 
     @staticmethod
-    def scenario_9_get_user_ids():
+    def scenario_8_get_user_ids():
         user_ids = Students.objects.values_list('user_id', flat=True).distinct()
         return list(user_ids)
 
