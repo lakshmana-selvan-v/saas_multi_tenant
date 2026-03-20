@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  openresty:
+    build: .
+    container_name: openresty-lua
+    ports:
+      - "9090:80"
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5444
+      POSTGRES_USER: app_user
+      POSTGRES_PASSWORD: "admin@123!"
+      POSTGRES_DB: saas_product
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - saas_network
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    ports:
+      - "5444:5432"
+    environment:
+      POSTGRES_USER: app_user
+      POSTGRES_PASSWORD: "admin@123!"
+      POSTGRES_DB: saas_product
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app_user -d saas_product"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - saas_network
+
+  redis:
+    image: redis:7
+    container_name: redis-cache
+    ports:
+      - "6379:6379"
+    networks:
+      - saas_network
+
+networks:
+  saas_network:
+    driver: bridge
+
+volumes:
+  postgres_data:

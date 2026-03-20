@@ -4,7 +4,10 @@ from ..model.tenants import Tenant
 from django.conf import settings
 from ..core.context_variable import set_current_tenant, clear_current_tenant,set_current_db_alias
 from copy import deepcopy
-from ..model.users import User
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class TenantSchemaMiddleware:
 
@@ -15,21 +18,32 @@ class TenantSchemaMiddleware:
         path = request.path
         if any(path.startswith(prefix) for prefix in settings.PUBLIC_URL_PREFIXES):
             return self.get_response(request)
-        host = request.get_host().split(":")[0]
-        parts = host.split(".")
-        sub_domain = None
-        if host.endswith("localhost") and len(parts) > 1:
-            sub_domain = parts[0]
-        elif len(parts) > 2:
-            sub_domain = parts[1]
-        if not sub_domain:
-            return JsonResponse({"error": "Invalid sub domain."}, status=400)
-        try:
-            tenant = Tenant.objects.using("default").get(sub_domain=sub_domain)
-        except Tenant.DoesNotExist:
-            return JsonResponse({"error": "Invalid Tenant ID."}, status=400)
+        tenant_identifier = request.headers.get("X-Tenant-ID") or request.headers.get("X-Tenant-Name")
+        print(f"Tenant Identifier: {tenant_identifier}")
+        if not tenant_identifier:
+            return JsonResponse({"error": "Tenant Identifier Is Required."}, status=400)
+        
+        tenant = None
+        tenant_id = request.headers.get("X-Tenant-ID")
+        tenant_name = request.headers.get("X-Tenant-Name")
+
+        if tenant_id:
+            try:
+                tenant = Tenant.objects.using("default").get(id=tenant_id)
+            except Tenant.DoesNotExist:
+                return JsonResponse({"error": "Invalid Tenant ID."}, status=400)
+        if tenant is None and tenant_name:
+            try:
+                tenant = Tenant.objects.using("default").get(sub_domain=tenant_name)
+            except Tenant.DoesNotExist:
+                return JsonResponse({"error": "Invalid Tenant Name."}, status=400)
+        if tenant is None:
+            return JsonResponse({"error": "Invalid Tenant Identifier."}, status=400)
         if not tenant.is_active:
             return JsonResponse({"error": "Tenant is inactive."}, status=403)
+        logger.info(f"Tenant Name: {tenant.name}")
+        logger.info(f"Tenant Plan: {tenant.plan}")
+        logger.info(f"Tenant Domain: {tenant.sub_domain}")
         try:
             set_current_tenant(tenant)
 

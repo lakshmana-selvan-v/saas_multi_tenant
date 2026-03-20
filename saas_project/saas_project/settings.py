@@ -26,9 +26,8 @@ SECRET_KEY = "django-insecure-p1h%_vn7lt=_oppovhf)$zj^(h2(%f@x+rr!)1bvlhqg#=^w*9
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    ".localhost",
+    #all all hosts
+    "*",
 ]
 
 
@@ -94,7 +93,7 @@ DATABASES = {
         "USER": "app_user",
         "PASSWORD": "admin@123!",
         "HOST": "localhost",
-        "PORT": "5432",
+        "PORT": "5444"
     }
 }
 
@@ -158,14 +157,14 @@ BASIC_SHARED_SCHEMA="public"
 GOLD_SEPARATE_SCHEMA="gold"
 ENTERPRISE_DATABASE_SCHEMA="enterprise"
 
-DB_USERNAME = "postgres"
-DB_PASSWORD = "admin"
+DB_USERNAME = "app_user"
+DB_PASSWORD = "admin@123!"
 DB_HOST = "localhost"
-DB_PORT = "5432"
+DB_PORT = "5444"
 
 
-DB_SUPER_USERNAME = "postgres"
-DB_SUPER_PASSWORD = "admin"
+DB_SUPER_USERNAME = "app_user"
+DB_SUPER_PASSWORD = "admin@123!"
 DB_SUPER_HOST = "localhost"
-DB_SUPER_PORT = "5432"
+DB_SUPER_PORT = "5444"
 DEFAULT_DB_NAME = "saas_product"
